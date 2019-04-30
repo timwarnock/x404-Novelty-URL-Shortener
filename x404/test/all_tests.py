@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # vim: set tabstop=4 shiftwidth=4 autoindent smartindent:
 import sys, os
-import glob
 import unittest
 
 ## set the path to include parent directory
