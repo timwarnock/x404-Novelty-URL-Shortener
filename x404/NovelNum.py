@@ -1,249 +1,170 @@
 #!/usr/bin/env python
 # vim: set fileencoding=utf-8 tabstop=4 shiftwidth=4 autoindent smartindent:
-''' Usage: x404.py command [options]
+''' NovelNum module
 
-    Where command includes:
-    add [url] * e.g., add http://www.anattatechnologies.com/
-    get [key] * e.g., get esza (returns the matching url)
-    del [key] * e.g., del esza (removes the matching entry)
-    list      * lists all entries
+    maps positive integers to encoded unicode character sets, e.g.,
 
-'''
-import os
-import sys
-import math
-import sqlite3
+    >>> nn = NovelNum()
+    >>> bases = nn.encode(420)
+    >>> print bases['top16']
+    cnw
+    >>> print bases['CJK']
+    侤
+    >>> print bases['anglosaxon']
+    ᛉᛉ
+    >>> 
 
+    Can also decode a previously encoded result, e.g.,
 
-def add_url(url):
-  conn = sqlite3.connect("URLs.db")
-  curs = conn.cursor()
-  curs.execute("select count(rowid) from URLS")
-  numrows = curs.fetchall()[0][0]
-  short_url = getalpha(numrows)
-  curs.execute("insert into URLS(short_url, long_url) values(?,?)",(short_url,url))
-  conn.commit()
-  conn.close()
-  return short_url
+    >>> nn = NovelNum()
+    >>> nn.decode('cnw')
+    420
+    >>> nn.decode(u'侤')
+    420
+    >>> nn.decode(u'ᛉᛉ')
+    420
+    >>> 
 
+    The above functionality is used for the x404 Novelty URL Shortener
 
-'''
->>> urllib.quote(u'笫'.encode('utf8'))
-'%E7%AC%AB'
->>> print urllib.unquote('%E7%AC%AB').decode('utf8')
-笫
 '''
 
 
-
-def revb(n):
-  min_digits = 1 + int(math.log(n,16))
-  bit_size = 4 * min_digits
-  bin_number = bin(n)
-  reverse_number = bin_number[-1:1:-1]
-  reverse_number = reverse_number + (bit_size - len(reverse_number))*'0'
-  return int(reverse_number,2)
-
-
-def mixb(n):
-   min_digits = 1 + int(math.log(n,16))
-   bit_size = 4 * min_digits
-   bin_number = bin(n)
-   reverse_number = bin_number[-1:1:-1]
-   reverse_number = reverse_number + (bit_size - len(reverse_number))*'0'
-   if reverse_number[0:2] == '00':
-     reverse_number = '1' + reverse_number + '0'
-   return int(reverse_number,2)
-
-
-top16pos = 'fwmucldrhsnioate'
-def num16alpha(num):
-    chars = []
-    while num > 0:
-        num, d = divmod(num, 16)
-        chars.append(top16pos[d])
-    return ''.join(reversed(chars))
-
-
-def getalpha(n):
-  return num16alpha(mixb(n))
-
-
-
-
-
-
+#
+# define static numeric character sets, from left-to-right
+# e.g., base8 = '0123456789abcdef'
+top16 = 'fwmucldrhsnioate'
 base62 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-top16pos = 'etaoinshrdlcumwf'
-hexc = '0123456789abcdef'
 greek = u'ΑαΒβΓγΔδΕεΖζΗηΘθΙιΚκΛλΜμΝνΞξΟοΠπΡρΣσςΤτΥυΦφΧχΨψΩω'
 greekU = u'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ'
 greekL = u'αβγδεζηθικλμνξοπρστυφχψω'
-anglos = u'ᚠᚢᚦᚩᚱᚳᚷᚹᚻᚾᛁᛄᛇᛈᛉᛋᛏᛒᛖᛗᛚᛝᛟᛞᚪᚫᚣᛡᛠ'
-base10 = '3147592068'
+anglosaxon = u'ᚠᚢᚦᚩᚱᚳᚷᚹᚻᚾᛁᛄᛇᛈᛉᛋᛏᛒᛖᛗᛚᛝᛟᛞᚪᚫᚣᛡᛠ'
+
+C_SETS = {
+    "top16": top16,
+    "base62": base62,
+    "greek": greek,
+    "anglosaxon": anglosaxon,
+}
+
+#
+# define named unicode ranges of printable characters
+# use the followign format:
+#       "name" : (unicode_start, unicode_end)
+#       where unicode_start and unicode_end are int
+# e.g., "lowercase" : (97, 122)
+U_SETS = {
+    "CJK"       : (int('4e00',16),int('9fea',16)),
+    "hangul"    : (int('ac00',16),int('d7a3',16)),
+    "yijing"    : (int('4dc0',16),int('4dff',16)),
+    "runic"     : (int('16a0',16),int('16ea',16)),
+    "dingbats"  : (int('2700',16),int('27bf',16)),
+    "braile"    : (int('2840',16),int('28ff',16)),
+    "alchemical": (int('1f700',16),int('1f773',16)),
+}
 
 
+class NovelNum:
+    '''
 
-def numc(num,cset):
-    chars = []
-    while num > 0:
-        num, d = divmod(num, len(cset))
-        chars.append(cset[d])
-    #return ''.join(reversed(chars))
-    return ''.join(chars)
+    '''
 
-def numuc(num,ustart,uend):
-    chars = []
-    while num > 0:
-        num, d = divmod(num, uend-ustart)
-        chars.append(unichr(ustart+d))
-    #return ''.join(reversed(chars))
-    return ''.join(chars)
+    def __init__(self):
+        self.C_SETS = C_SETS
+        self.U_SETS = U_SETS
 
-def revuc(ucnum,ustart,uend):
-  base = uend-ustart
-  basem = 1
-  n = 0
-  #for c in unicode(ucnum,"utf8")[::-1]:
-  for c in unicode(ucnum,"utf8"):
-    n += (ord(c)-ustart) * basem
-    basem = basem*base
-  return n
+    def encode(self, n):
+        '''
+            returns a dict with encoded values for the number n
+        '''
+        if not isinstance(n, int):
+            raise TypeError("You can only encode integers")
+        if n <= 0:
+            raise ValueError("You can only encode positive integers")
+        encodings = {}
+        for type, cset in self.C_SETS.iteritems():
+            encodings[type] = self._encode_cset(n, cset)
+        for type, (ustart,uend) in self.U_SETS.iteritems():
+            encodings[type] = self._encode_uset(n, ustart, uend)
+        ## differentiate top16 and base62 if they collide
+        if all(c in top16 for c in encodings['base62']):
+            encodings['base62'] = u'-' + encodings['base62']
+        return encodings
 
-def revc(ucnum,cset):
-  base = len(cset)
-  basem = 1
-  n = 0
-  #for c in unicode(ucnum,"utf8")[::-1]:
-  for c in unicode(ucnum,"utf8"):
-    n += (cset.index(c)) * basem
-    basem = basem*base
-  return n
+    def decode(self, nstr):
+        ctype = self._get_type(nstr)
+        if len(ctype) == 2:
+            if ctype[0] == "base62" and self._unicode_this(nstr)[0] == u'-':
+                nstr = nstr[1:]
+            return self._decode_cset(nstr,ctype[1])
+        elif len(ctype) == 3:
+            return self._decode_uset(nstr,ctype[1],ctype[2])
+        raise ValueError("Canot decode {!r} unknown numeric mapping".format(nstr))
 
+    def _encode_cset(self, n, cset):
+        chars = []
+        while n > 0:
+            n, d = divmod(n, len(cset))
+            chars.append(cset[d])
+        return ''.join(chars)
 
-def is_top16pos(ctest):
-  for c in ctest:
-    if c not in top16pos:
-      return False
-  return True
+    def _encode_uset(self, n, ustart, uend):
+        chars = []
+        while n > 0:
+            n, d = divmod(n, uend-ustart)
+            chars.append(unichr(ustart+d))
+        return ''.join(chars)
 
-def num2alphanum(num):
-  res = numc(num,base62)
-  if is_top16pos(res):
-    res = '_' + res
-  return res
+    def _decode_cset(self, nstr, cset):
+        base = len(cset)
+        basem = 1
+        n = 0
+        for c in self._unicode_this(nstr):
+            n += (cset.index(c)) * basem
+            basem = basem*base
+        return n
 
+    def _decode_uset(self, nstr, ustart, uend):
+        base = uend-ustart
+        basem = 1
+        n = 0
+        for c in self._unicode_this(nstr):
+            if uend > ord(c) < ustart:
+                raise ValueError("Canot decode a character within {!r}, {!r} out of bounds".format(nstr, c))
+            n += (ord(c)-ustart) * basem
+            basem = basem*base
+        return n
 
-def alphacollisions(nmax,nmin=1):
-  c = {}
-  for i in range(nmin,nmax):
-    a = num2alphanum(i)
-    print i, "=", a
-    if '_' in a:
-      c[i] = a
-  for i,a in c.iteritems():
-    print i, a, numc(i,top16pos)
-  print "there were %s collisions out of %d" % (len(c), nmax-nmin)
+    def _unicode_this(self, s):
+        if isinstance(s, str):
+            return unicode(s,"utf8")
+        elif isinstance(s, unicode):
+            return s
+        raise TypeError("Invalid unicode")
 
-
-def samples(num=1, ninc=1, hostname="avant.net"):
- for n in range(num,ninc+num):
-  print "http://%s/%s" % (hostname, n) # base-10
-  print "http://%s/%s" % (hostname, numc(n,top16pos)) # top16
-  print "http://%s/%s" % (hostname, numc(n,base62)) # alphanum
-  print "http://%s/%s" % (hostname, numuc(n,int('4e00',16),int('9fea',16))) # Chinese
-  print "http://%s/%s" % (hostname, numuc(n,int('ac00',16),int('d7a3',16))) # Hangul
-  #print "http://%s/%s" % (hostname, numuc(n,int('4dc0',16),int('4dff',16))) # yijing
-  print "http://%s/%s" % (hostname, numc(n,greek)) # greek
-  print "http://%s/%s" % (hostname, numc(n,anglos)) # anglo-saxon
-  #print "http://%s/%s" % (hostname, numuc(n,int('16a0',16),int('16ea',16))) # runic
-  print "http://%s/%s" % (hostname, numuc(n,int('2700',16),int('27bf',16))) # dingbats
-  print "http://%s/%s" % (hostname, numuc(n,int('2840',16),int('28ff',16))) # 8-dot braile
-  print "http://%s/%s" % (hostname, numuc(n,int('1f700',16),int('1f773',16))) # alchemical
-  print "-"
-  time.sleep(0.5)
-
-
-'''
-is there a collision? where is first collision?
-Let's find out :)
-'''
-
-top64pos = 'etaoinshrdlcumwfgypbvkjxqz0123456789-_ETAOINSHRDLCUMWFGYPBVKJXQZ'
-def num64alpha(num):
-    chars = []
-    while num > 0:
-        num, d = divmod(num, 64)
-        chars.append(top64pos[d])
-    return ''.join(reversed(chars))
-
-
-def geta64(rmax,rmin=1):
-  c = {}
-  for i in range(rmin,rmax):
-    min_digits = 1 + int(math.log(i,64))
-    bit_size = 6 * min_digits
-    def geta(n):
-      return num64alpha(mixb(n))
-    ''' ok '''
-    print i, geta(i), "min_digits", min_digits, "bit_size", bit_size
-    if geta(i) in c:
-      print "COLLISION AT", geta(i), i, "=",c[geta(i)]
-      break
-    else:
-      c[geta(i)] = i
-
-
-def geta16(rmax,rmin=1):
-  c = {}
-  for i in range(rmin,rmax):
-    min_digits = 1 + int(math.log(i,16))
-    bit_size = 4 * min_digits
-    def geta(n):
-      return num16alpha(mixb(n))
-    ''' ok '''
-    print i, geta(i), "min_digits", min_digits, "bit_size", bit_size
-    if geta(i) in c:
-      print "COLLISION AT", geta(i), i, "=",c[geta(i)]
-      break
-    else:
-      c[geta(i)] = i
-
-
-def getan(rmax,rmin=1):
-  c = {}
-  def mixb(num):
-    base10 = '0314759268'
-    chars = []
-    while num > 0:
-      num, d = divmod(num, 10)
-      chars.append(base10[d])
-    alphs = ''.join(reversed(chars))
-    # return alphs
-    lena = len(alphs)
-    return alphs[lena/2:] + alphs[:lena/2]
-  for i in range(rmin,rmax):
-    enc_i = i # int(mixb(i))
-    test = mixb(i) # ''.join(reversed(mixb(i))) # numc(enc_i,top16pos)
-    print i, test, numc(i,top16pos), numuc(i,int('4e00',16),int('9fea',16)), numc(i,anglos)
-    if test in c:
-      print "COLLISION AT", test, i, "=",c[test]
-      break
-    else:
-      c[test] = i
+    def _get_type(self, ctest):
+        '''
+        returns ('type', cset) or ('type', ustart, uend)
+        '''
+        firstC = self._unicode_this(ctest)[0]
+        if firstC == u'-':
+            return ('base62', base62)
+        else:
+            for type, cset in self.C_SETS.iteritems():
+                if firstC in cset:
+                    return (type, cset)
+            n = ord(firstC)
+            for type, (ustart,uend) in self.U_SETS.iteritems():
+                if ustart <= n <= uend:
+                    return (type, ustart, uend)
+        raise ValueError("Canot get type for {!r}, unknown numeric mapping".format(ctest))
 
 
 
 
 if __name__ == '__main__':
-  ''' optparse? '''
-  if len(sys.argv) > 2 and sys.argv[1] == "add":
-    short_url = add_url(sys.argv[2])
-    while os.path.exists("../%s" % (short_url)):
-      print >> sys.stderr, "%s already exists and won't cause a 404" % (short_url)
-      short_url = add_url(sys.argv[2])
-    print "SUCCESS\nhttp://avant.net/%s" % (short_url)
-      
+    ''' optparse? '''
+    print ""  
 
 
 
