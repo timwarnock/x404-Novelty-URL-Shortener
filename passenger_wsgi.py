@@ -17,6 +17,7 @@ import x404
 ## gx404 globals
 DEBUG = True
 DBFILE = 'x404.db'
+_SURL = x404.ShortURLDB.ShortURLDB(DBFILE)
 
 
 
@@ -27,14 +28,36 @@ def index():
     return helloWorld
 
 
-# x404
-@application.route('/<path:key>')
-def shorturl(key):
+
+# x404 get info on key
+@application.route('/<path:key>/info')
+def getURLinfo(key):
     try:
         ## fuck urllib.unquote for not handling a unicode string as ascii
         ## unicode is supposed to be backwards compatible with ascii
         key = unquote(str(key)).decode('utf8')
-        surl = x404.ShortURLDB.ShortURLDB(DBFILE)
+        surl = _SURL
+        url = surl.resolve(key)
+        if url is None:
+            nn = x404.NovelNum.NovelNum()
+            rowid = nn.decode(key)
+            res = u' info: %s is %d, no url found' % (key,rowid)
+        else:
+            res = ' %s maps to %s' % (key,url,)
+        return res
+    except Exception as e:
+        if DEBUG:
+            return '<pre>' + traceback.format_exc() + '</pre>'
+        return redirect(u"https://去.cc", code=302)
+
+# x404 redirector
+@application.route('/<path:key>')
+def URLredirector(key):
+    try:
+        ## fuck urllib.unquote for not handling a unicode string as ascii
+        ## unicode is supposed to be backwards compatible with ascii
+        key = unquote(str(key)).decode('utf8')
+        surl = _SURL
         url = surl.resolve(key)
         if url is not None:
             return redirect(url)
