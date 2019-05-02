@@ -1,1 +1,3 @@
-__all__ = ['NovelNum']
+__all__ = ['NovelNum','ShortURLDB']
+import NovelNum
+import ShortURLDB
