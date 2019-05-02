@@ -117,6 +117,19 @@ class test_ShortURLDB(unittest.TestCase):
             self.surl.add('https://duckduckgo.com/')
         self.assertEquals( self.surl.resolve('du'), 'https://duckduckgo.com/')
 
+    def test_info(self):
+        self.surl._newdb()
+        for i in range(16):
+            self.surl.add('https://nonsense.org/')
+        inf = self.surl.info('l')
+        self.assertEquals( 'https://nonsense.org/', inf['url'] )
+        self.assertEquals( 5, inf['rowid'] )
+        self.assertEquals( u'l', inf['encodings']['top16'] )
+        self.assertEquals( u'5', inf['encodings']['base62'] )
+        self.assertEquals( u'丅', inf['encodings']['CJK'] )
+        self.assertEquals( u'⡅', inf['encodings']['braile'] )
+        self.assertEquals( u'γ', inf['encodings']['greek'] )
+
 
 if __name__ == '__main__':
     unittest.main()

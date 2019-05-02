@@ -61,6 +61,20 @@ class ShortURLDB:
         nn = NovelNum.NovelNum()
         return self._get(nn.decode(key))
 
+    def info(self, key):
+        ''' show all info about the key
+            returns URL and all other encodings
+        ''' 
+        nn = NovelNum.NovelNum()
+        rowid = nn.decode(key)
+        encodings = nn.encode(rowid)
+        url = self._get(rowid)
+        return {
+            'rowid':rowid,
+            'url':url,
+            'encodings':encodings,
+        }
+
     def add(self, url):
         ''' insert a new URL and return all NovelNum encodings
             for the newly inserted URL.
