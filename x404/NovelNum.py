@@ -77,19 +77,33 @@ class NovelNum:
         '''
             returns a dict with encoded values for the number n
         '''
+        encodings = {}
+        for type, cset in self.C_SETS.iteritems():
+            encodings[type] = self.encodeByType(n, type)
+        for type, (ustart,uend) in self.U_SETS.iteritems():
+            encodings[type] = self.encodeByType(n, type)
+        return encodings
+
+    def encodeByType(self, n, type):
+        ''' returns the encoded number (by type)
+            e.g., 
+            >>> nn.encodeByType(123,'base62')
+            u'Z1'
+            >>> 
+        ''' 
         if not isinstance(n, int):
             raise TypeError("You can only encode integers")
         if n <= 0:
             raise ValueError("You can only encode positive integers")
-        encodings = {}
-        for type, cset in self.C_SETS.iteritems():
-            encodings[type] = self._encode_cset(n, cset)
-        for type, (ustart,uend) in self.U_SETS.iteritems():
-            encodings[type] = self._encode_uset(n, ustart, uend)
-        ## differentiate top16 and base62 if they collide
-        if all(c in top16 for c in encodings['base62']):
-            encodings['base62'] = u'-' + encodings['base62']
-        return encodings
+        if type in self.C_SETS:
+            nstr = self._encode_cset(n, self.C_SETS[type])
+            ## differentiate top16 and base62 if they collide
+            if type == 'base62' and all(c in self.C_SETS['top16'] for c in nstr):
+                nstr = u'-' + nstr
+            return nstr
+        if type in self.U_SETS:
+            return self._encode_uset(n, self.U_SETS[type][0], self.U_SETS[type][1])
+        raise ValueError("Unknown encoding type {!r}".format(type))
 
     def decode(self, nstr):
         ctype = self._get_type(nstr)
@@ -104,6 +118,15 @@ class NovelNum:
         elif len(ctype) == 3:
             return self._decode_uset(nstr,ctype[1],ctype[2])
         raise ValueError("Canot decode {!r} unknown numeric mapping".format(nstr))
+
+    def decodeByType(self, nstr, type):
+        if type == "base62" and self._unicode_this(nstr)[0] == u'-':
+            nstr = nstr[1:]
+        if type in self.C_SETS:
+            return self._decode_cset(nstr, self.C_SETS[type])
+        if type in self.U_SETS:
+            return self._decode_uset(nstr, self.U_SETS[type][0], self.U_SETS[type][1])
+        raise ValueError("Unknown encoding type {!r}".format(type))
 
     def _encode_cset(self, n, cset):
         chars = []

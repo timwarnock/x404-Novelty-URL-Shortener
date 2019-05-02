@@ -92,6 +92,20 @@ class test_NovelNum(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.nn.decode(u'x!x龍a')
 
+    def test_duckduck(self):
+        self.assertEqual( self.nn.decode('du'), 54)
+
+    def test_bytype(self):
+        self.assertEqual( self.nn.encodeByType(54,'top16'), u'du' )
+        self.assertEqual( self.nn.decodeByType(u'du','top16'), 54 )
+        self.assertEqual( self.nn.decodeByType(u'-du','base62'), 1873 )
+
+    def test_bytypeErrors(self):
+        with self.assertRaises(ValueError):
+            self.nn.encodeByType(54,'notype')
+        with self.assertRaises(ValueError):
+            self.nn.encodeByType(54,None)
+
 
 if __name__ == '__main__':
     unittest.main()

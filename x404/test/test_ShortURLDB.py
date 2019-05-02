@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# vim: set tabstop=4 shiftwidth=4 autoindent smartindent:
+# vim: set fileencoding=utf-8 tabstop=4 shiftwidth=4 autoindent smartindent:
 import logging, os, sys, unittest
 
 ## parent directory
@@ -90,9 +90,32 @@ class test_ShortURLDB(unittest.TestCase):
         self.assertEquals( self.surl.resolve(encodings['hangul']), 'https://what.com/test')
         self.assertEquals( self.surl.resolve(encodings['CJK']), 'https://what.com/test')
 
+    def test_list(self):
+        self.surl._newdb()
+        for i in range(1000):
+            self.surl._insert('https://filler.com/nonsense/'+str(i))
+        top16 = self.surl.list()
+        self.assertEquals('w' , top16[0][1] )
+        self.assertEquals('htu' , top16[999][1] )
+
+    def test_listCJK(self):
+        self.surl._newdb()
+        for i in range(25000):
+            self.surl._insert('https://filler.com/nonsense/'+str(i))
+        CJK = self.surl.list('CJK')
+        self.assertEquals(u'丁' , CJK[0][1] )
+        self.assertEquals(u'凨' , CJK[999][1] )
+        self.assertEquals(u'嶾丁' , CJK[24999][1] )
+
     def test_resolveNone(self):
         self.surl._newdb()
         self.assertEquals( self.surl.resolve('any'), None)
+
+    def test_duckNone(self):
+        self.surl._newdb()
+        for i in range(55):
+            self.surl.add('https://duckduckgo.com/')
+        self.assertEquals( self.surl.resolve('du'), 'https://duckduckgo.com/')
 
 
 if __name__ == '__main__':

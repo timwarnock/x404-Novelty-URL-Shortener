@@ -32,6 +32,13 @@ class ShortURLDB:
             self.db = sqlite3.connect(':memory:')
         else:
             self.db = sqlite3.connect(dbfile)
+        self._initdb()
+
+    def _initdb(self):
+        curs = self.db.cursor()
+        curs.execute('CREATE TABLE IF NOT EXISTS urls(url TEXT)')
+        self.db.commit()
+        curs.close()
 
     def _newdb(self):
         curs = self.db.cursor()
@@ -61,6 +68,18 @@ class ShortURLDB:
         nn = NovelNum.NovelNum()
         rowid = self._insert(url)
         return nn.encode(rowid)
+
+    def list(self, type='top16'):
+        ''' return all URLs with the key (by type)
+            e.g., [(1,'w','https://someurl.com'),...]
+        ''' 
+        reslist = []
+        URLs = self._list()
+        nn = NovelNum.NovelNum()
+        for row in URLs:
+            nstr = nn.encodeByType(row[0], type)
+            reslist.append((row[0],nstr,row[1]))
+        return reslist
 
     def _is_good_url(self, url):
         if isinstance(url, int):
@@ -109,12 +128,5 @@ class ShortURLDB:
         self.db.commit()
         curs.close()
         return True
-
-
-if __name__ == '__main__':
-    ''' optparse? '''
-    print ""  
-
-
 
 
