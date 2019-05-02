@@ -6,10 +6,16 @@
 
     >>> surl = ShortURLDB('x404.sqlite')
     >>> encodings = surl.add('https://www.duckduckgo.com/')
-    >>> surl.resolve(encodings['top16'])
+    >>> encodings['top16']
+    u'dd'
+    >>> encodings['base62']
+    u'E1'
+    >>> surl.resolve('dd')
     u'https://www.duckduckgo.com/'
-    >>> surl.resolve(encodings['base16'])
+    >>> surl.resolve('E1')
     u'https://www.duckduckgo.com/'
+    >>> 
+
 '''
 
 import sqlite3
