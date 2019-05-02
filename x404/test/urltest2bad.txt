@@ -1,0 +1,11 @@
+1
+http:/gofuckyourself.com/no
+http://avant.net/one
+https://avant.net/two
+asdf
+https://avant.net/three
+https://avant.net/four
+gopher://thisismaybeokay.com?
+no
+%#
+https://avant.net/five

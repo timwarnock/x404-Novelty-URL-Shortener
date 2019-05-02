@@ -16,5 +16,5 @@ from x404 import NovelNum
 
 @application.route('/')
 def index():
-	helloWorld = u'Hello 去 %s' % (NovelNum.anglos)
+	helloWorld = u'Hello 去 %s' % (NovelNum.anglosaxon)
 	return helloWorld
