@@ -88,6 +88,10 @@ class test_NovelNum(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.nn.decode(u'丟!')
 
+    def test_morebadunicode(self):
+        with self.assertRaises(ValueError):
+            self.nn.decode(u'x!x龍a')
+
 
 if __name__ == '__main__':
     unittest.main()

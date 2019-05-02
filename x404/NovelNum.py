@@ -94,8 +94,12 @@ class NovelNum:
     def decode(self, nstr):
         ctype = self._get_type(nstr)
         if len(ctype) == 2:
+            ## strip the '-' from a base62
             if ctype[0] == "base62" and self._unicode_this(nstr)[0] == u'-':
                 nstr = nstr[1:]
+            ## make sure top16 is not actually base62
+            if ctype[0] == "top16" and not all(c in top16 for c in self._unicode_this(nstr)):
+                ctype = ('base62',base62)
             return self._decode_cset(nstr,ctype[1])
         elif len(ctype) == 3:
             return self._decode_uset(nstr,ctype[1],ctype[2])

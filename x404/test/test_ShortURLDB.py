@@ -90,6 +90,9 @@ class test_ShortURLDB(unittest.TestCase):
         self.assertEquals( self.surl.resolve(encodings['hangul']), 'https://what.com/test')
         self.assertEquals( self.surl.resolve(encodings['CJK']), 'https://what.com/test')
 
+    def test_resolveNone(self):
+        self.surl._newdb()
+        self.assertEquals( self.surl.resolve('any'), None)
 
 
 if __name__ == '__main__':
