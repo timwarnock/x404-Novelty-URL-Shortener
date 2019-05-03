@@ -23,30 +23,32 @@ import x404
 DBFILE = 'x404.db'
 SURL = x404.ShortURLDB.ShortURLDB(DBFILE)
 NN = x404.NovelNum.NovelNum()
-
+HOSTNAME = u'http://去.cc'
 
 def add(url):
-    return SURL.add(url)
+    encodings = SURL.add(url)
+    for row in encodings.values():
+        print u"%s/%s" %(HOSTNAME,row)
 
 def get(key):
-    return SURL.resolve(key)
+    print SURL.resolve(key)
 
 def edit(key, url):
     rowid = NN.decode(key)
-    return SURL._edit(rowid, url)
+    print SURL._edit(rowid, url)
 
-def print_list(type):
+def list(type):
     rows = SURL.list(type)
     for row in rows:
         print u",".join(map(unicode, row))
 
 def load(filename):
     SURL._loadURLs(filename)
-    return ""
+    print "SUCCESS"
 
 def drop():
     SURL._newdb()
-    return ""
+    print "DROPPED"
 
 
 def requireArgs(n,testn):
@@ -72,19 +74,19 @@ if __name__ == '__main__':
     try:
         if args.command == "add":
             requireArgs(1,len(args.vars))
-            print add(args.vars[0])
+            add(args.vars[0])
         elif args.command == "get":
             requireArgs(1,len(args.vars))
-            print get(args.vars[0])
+            get(args.vars[0])
         elif args.command == "edit":
             requireArgs(2,len(args.vars))
-            print edit(args.vars[0], args.vars[1])
+            edit(args.vars[0], args.vars[1])
         elif args.command == "list":
             requireArgs(1,len(args.vars))
-            print_list(args.vars[0])
+            list(args.vars[0])
         elif args.command == "load":
             requireArgs(1,len(args.vars))
-            print load(args.vars[0])
+            load(args.vars[0])
         elif args.command == "drop":
             print drop()
     except:

@@ -37,13 +37,16 @@ def getURLinfo(key):
         ## unicode is supposed to be backwards compatible with ascii
         key = unquote(str(key)).decode('utf8')
         surl = _SURL
-        url = surl.resolve(key)
+        inf = surl.info(key)
+        url = inf['url']
+        rowid = inf['rowid']
         if url is None:
-            nn = x404.NovelNum.NovelNum()
-            rowid = nn.decode(key)
-            res = u' info: %s is %d, no url found' % (key,rowid)
+            res = u'info: %s is %d, no url found' % (key,rowid)
         else:
-            res = ' %s maps to %s' % (key,url,)
+            res = u'http://去.cc/%s redirects to %s' % (key,url,)
+            res += u'<br/> id = %d' % (rowid,)
+            res += u'<br/><br/>All mappings:<br/>'
+            res += u'<br/>'.join([u'http://去.cc/'+x for x in inf['encodings'].values()])
         return res
     except Exception as e:
         if DEBUG:
