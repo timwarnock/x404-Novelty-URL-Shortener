@@ -56,25 +56,25 @@ class test_PseudoForm(unittest.TestCase):
     def test_commitRequest(self):
         handshake = self.pf.addRequest('192.168.1.1', 'https://nonsense.com/', self.pf.getFormKey())
         return_handshake = self.pf._expected_return_handshake(handshake)
-        rowid = self.pf.commitRequest('192.168.1.1', return_handshake, 0)
+        enc = self.pf.commitRequest('192.168.1.1', return_handshake, 0)
         req = self.pf.getRequest('192.168.1.1')
         self.assertEqual(req, None)
-        self.assertEqual(self.pf.surl._get(rowid), 'https://nonsense.com/')
+        self.assertEqual(self.pf.surl.resolve(enc['CJK']), 'https://nonsense.com/')
 
     def test_BADcommitRequest(self):
         handshake = self.pf.addRequest('192.168.1.1', 'https://nonsense.com/', self.pf.getFormKey())
-        rowid = self.pf.commitRequest('192.168.1.1', 'bad return handshake')
+        enc = self.pf.commitRequest('192.168.1.1', 'bad return handshake')
         req = self.pf.getRequest('192.168.1.1')
         self.assertEqual(req, None)
-        self.assertEqual(rowid, None)
+        self.assertEqual(enc, None)
 
     def test_LATEcommitRequest(self):
         handshake = self.pf.addRequest('192.168.1.1', 'https://nonsense.com/', self.pf.getFormKey())
         return_handshake = self.pf._expected_return_handshake(handshake)
-        rowid = self.pf.commitRequest('192.168.1.1', return_handshake)
+        enc = self.pf.commitRequest('192.168.1.1', return_handshake)
         req = self.pf.getRequest('192.168.1.1')
         self.assertEqual(req, None)
-        self.assertEqual(rowid, None)
+        self.assertEqual(enc, None)
 
     def test_cleanup(self):
         db = self.pf.surl.db

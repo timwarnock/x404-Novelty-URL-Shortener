@@ -121,18 +121,18 @@ class PseudoForm:
         ''' commit the request IFF
             the time difference tdelta is mintime > tdelta < maxtime
 
-            return rowid within the ShortURLDB
+            return encodings within the ShortURLDB
         '''
         req = self.getRequest(ip, True, maxtime)
-        rowid = None
+        encodings = None
         if (
             req is not None 
             and req['return_handshake'] == rhs
             and req['ts_delta'] < maxtime
             and req['ts_delta'] > mintime
         ):
-            rowid = self.surl._insert(req['url'])
-        return rowid
+            encodings = self.surl.add(req['url'])
+        return encodings
 
     def _get_handshakes(self, ip):
         handshake = hashlib.sha256(str(time.time())+ip).hexdigest()
