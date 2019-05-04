@@ -95,7 +95,7 @@ class PseudoForm:
         except:
             return False
 
-    def getRequest(self, ip, delete=False):
+    def getRequest(self, ip, delete=False, maxtime=10):
         ''' retrieve the previous request (by ip) or None
             delete old requests, and optionally delete the current request
         '''
@@ -103,7 +103,7 @@ class PseudoForm:
         res = None
         if ipnum is not None:
             curs = self.surl.db.cursor()
-            curs.execute('DELETE FROM url_requests WHERE ts < ?',(time.time()-10,))
+            curs.execute('DELETE FROM url_requests WHERE ts < ?',(time.time()-maxtime,))
             rows = self.surl.db.execute('SELECT url,hs,ts FROM url_requests WHERE ip=?',(ipnum,))
             row = rows.fetchone()
             if row is not None:
@@ -117,18 +117,19 @@ class PseudoForm:
             curs.close()
         return res
 
-    def commitRequest(self, ip, rhs, maxtime=10):
+    def commitRequest(self, ip, rhs, mintime=1, maxtime=10):
         ''' commit the request IFF
-            the time difference between now and the request is < maxtime
+            the time difference tdelta is mintime > tdelta < maxtime
 
             return rowid within the ShortURLDB
         '''
-        req = self.getRequest(ip, True)
+        req = self.getRequest(ip, True, maxtime)
         rowid = None
         if (
             req is not None 
             and req['return_handshake'] == rhs
             and req['ts_delta'] < maxtime
+            and req['ts_delta'] > mintime
         ):
             rowid = self.surl._insert(req['url'])
         return rowid
