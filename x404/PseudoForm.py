@@ -45,7 +45,7 @@ class PseudoForm:
         self.surl.db.commit()
         curs.close()
 
-    def getFormKey(self, ts=int(time.time()), divsec=300):
+    def getFormKey(self, ts=None, divsec=300):
         ''' return a time-sensitive hash that can be 
             calculated at a later date to dermine if it matches
 
@@ -53,6 +53,8 @@ class PseudoForm:
             the hash will change every divsec seconds (on the clock)
             e.g., divsec=300, every 5-minutes the hash will change
         '''
+        if ts is None:
+            ts = int(time.time())
         return hashlib.sha1((self._unicode(ts/divsec)+SECRET).encode('utf-8')).hexdigest()[2:]
 
     def isValidFormKey(self, testkey, lookback=2, divsec=300):
