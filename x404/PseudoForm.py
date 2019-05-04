@@ -140,7 +140,7 @@ class PseudoForm:
         return (handshake, r_handshake)
 
     def _expected_return_handshake(self, handshake):
-        return hashlib.sha256(handshake).hexdigest()
+        return handshake[::-1]
 
     def _is_good_ip(self, ip):
         try:
