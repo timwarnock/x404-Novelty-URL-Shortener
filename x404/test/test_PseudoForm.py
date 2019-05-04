@@ -55,7 +55,7 @@ class test_PseudoForm(unittest.TestCase):
 
     def test_commitRequest(self):
         handshake = self.pf.addRequest('192.168.1.1', 'https://nonsense.com/', self.pf.getFormKey())
-        return_handshake = self.pf._expected_return_handshake('192.168.1.1', handshake)
+        return_handshake = self.pf._expected_return_handshake(handshake)
         rowid = self.pf.commitRequest('192.168.1.1', return_handshake, 0)
         req = self.pf.getRequest('192.168.1.1')
         self.assertEqual(req, None)
@@ -70,7 +70,7 @@ class test_PseudoForm(unittest.TestCase):
 
     def test_LATEcommitRequest(self):
         handshake = self.pf.addRequest('192.168.1.1', 'https://nonsense.com/', self.pf.getFormKey())
-        return_handshake = self.pf._expected_return_handshake('192.168.1.1', handshake)
+        return_handshake = self.pf._expected_return_handshake(handshake)
         rowid = self.pf.commitRequest('192.168.1.1', return_handshake)
         req = self.pf.getRequest('192.168.1.1')
         self.assertEqual(req, None)
