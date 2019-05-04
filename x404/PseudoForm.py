@@ -41,7 +41,7 @@ class PseudoForm:
     def _initdb(self):
         curs = self.surl.db.cursor()
         curs.execute('CREATE TABLE IF NOT EXISTS url_requests(ip INT UNIQUE PRIMARY KEY, url TEXT, hs TEXT, ts REAL)')
-        curs.execute('CREATE INDEX idx_url_requests_ts ON url_requests(ts)')
+        curs.execute('CREATE INDEX IF NOt EXISTS idx_url_requests_ts ON url_requests(ts)')
         self.surl.db.commit()
         curs.close()
 

@@ -5,7 +5,7 @@ if sys.executable != INTERP:
     os.execl(INTERP, INTERP, *sys.argv)
 sys.path.append(os.getcwd())
 
-from flask import Flask, redirect
+from flask import Flask, jsonify, redirect, render_template
 application = Flask(__name__)
 
 from urllib import unquote
@@ -18,14 +18,25 @@ import x404
 DEBUG = True
 DBFILE = 'x404.db'
 _SURL = x404.ShortURLDB.ShortURLDB(DBFILE)
+_PF = x404.PseudoForm.PseudoForm(_SURL)
 
+
+# urllib.unquote (python2) does not handle unicode properly
+def _utf8(s):
+    return unquote(str(s)).decode('utf8')
 
 
 # main page
 @application.route('/')
 def index():
-    helloWorld = u'Hello 去 %s' % (x404.NovelNum.anglosaxon)
-    return helloWorld
+    try:
+        title = u'去.cc'
+        data = {'username':x404.NovelNum.anglosaxon}
+        return render_template('index.html', title=title, data=data)
+    except Exception as e:
+        if DEBUG:
+            return '<pre>' + traceback.format_exc() + '</pre>'
+        return redirect(u"https://avant.net", code=302)
 
 
 
@@ -33,9 +44,7 @@ def index():
 @application.route('/<path:key>/info')
 def getURLinfo(key):
     try:
-        ## fuck urllib.unquote for not handling a unicode string as ascii
-        ## unicode is supposed to be backwards compatible with ascii
-        key = unquote(str(key)).decode('utf8')
+        key = _utf8(key)
         surl = _SURL
         inf = surl.info(key)
         url = inf['url']
@@ -43,23 +52,40 @@ def getURLinfo(key):
         if url is None:
             res = u'info: %s is %d, no url found' % (key,rowid)
         else:
-            res = u'http://去.cc/%s redirects to %s' % (key,url,)
-            res += u'<br/> id = %d' % (rowid,)
-            res += u'<br/><br/>All mappings:<br/>'
-            res += u'<br/>'.join([u'http://去.cc/'+x for x in inf['encodings'].values()])
+            res = render_template('info.html', key=key, 
+                    rowid=rowid, url=url, 
+                    encodings=inf['encodings'].values() )
         return res
     except Exception as e:
         if DEBUG:
             return '<pre>' + traceback.format_exc() + '</pre>'
         return redirect(u"https://去.cc", code=302)
 
+
+# x404 get psuedoform html|json object
+@application.route('/new.url', methods=['GET', 'POST', 'PUT'])
+def getPseudoForm():
+    try:
+        formkey = _PF.getFormKey()
+        if request.method == 'POST':
+            hs = _PF.addRequest(request.remote_addr, request.form.get('url'), formkey)
+            return jsonify({'handshake':hs})
+        elif request.method == 'PUT':
+            rowid = _PF.commitRequest(request.remote_addr, request.form.get('return_handshake')
+            return jsonify({'id':rowid})
+        return render_template('new.html', formkey=formkey)
+    except Exception as e:
+        if DEBUG:
+            return '<pre>' + traceback.format_exc() + '</pre>'
+        return u'{}'
+
+
 # x404 redirector
+# TODO template? or redirect somewhere else?
 @application.route('/<path:key>')
 def URLredirector(key):
     try:
-        ## fuck urllib.unquote for not handling a unicode string as ascii
-        ## unicode is supposed to be backwards compatible with ascii
-        key = unquote(str(key)).decode('utf8')
+        key = _utf8(key)
         surl = _SURL
         url = surl.resolve(key)
         if url is not None:

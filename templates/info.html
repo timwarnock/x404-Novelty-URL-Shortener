@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>去 => {{ key }}</title>
+    </head>
+    <body>
+        <h1>"{{ key }}" redirect</h1>
+        <p>{{ url }}</p>
+        <p>id is {{ rowid }}</p>
+        <h2>Mappings</h2>
+        {% for enc in encodings %}
+        <p>http://去.cc/{{ enc }}</p>
+        {% endfor %}
+    </body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>去 new</title>
+        <script src="/js/PseudoForm.js"></script>
+    </head>
+    <body>
+        <h1>New URL</h1>
+        <form name="honey" method="POST">
+        <input type="text" name="url">
+        <input type="submit" value="Add">
+        </form>
+
+
+<script>
+var _formkey = '{{ formkey }}';
+honey = document.forms['honey'];
+var input = document.createElement('input');
+input.type = 'hidden';
+input.name = 'formkey';
+input.value = _formkey;
+honey.appendChild(input);
+
+
+
+</script>
+
+    </body>
+</html>
