@@ -136,11 +136,11 @@ class PseudoForm:
 
     def _get_handshakes(self, ip):
         handshake = hashlib.sha256(str(time.time())+ip).hexdigest()
-        r_handshake = self._expected_return_handshake(ip, handshake)
+        r_handshake = self._expected_return_handshake(handshake)
         return (handshake, r_handshake)
 
-    def _expected_return_handshake(self, ip, handshake):
-        return hashlib.sha256(ip+handshake).hexdigest()
+    def _expected_return_handshake(self, handshake):
+        return hashlib.sha256(handshake).hexdigest()
 
     def _is_good_ip(self, ip):
         try:
