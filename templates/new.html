@@ -4,25 +4,91 @@
         <meta charset="utf-8">
         <title>去 new</title>
         <script src="/js/PseudoForm.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
         <h1>New URL</h1>
+        <div id="__new__">
         <form name="honey" method="POST">
         <input type="text" name="url">
-        <input type="submit" value="Add">
+        <input id="addhoney" type="submit" value="Add">
         </form>
+        </div>
 
 
 <script>
-var _formkey = '{{ formkey }}';
-honey = document.forms['honey'];
-var input = document.createElement('input');
-input.type = 'hidden';
-input.name = 'formkey';
-input.value = _formkey;
-honey.appendChild(input);
 
 
+document.getElementById('__new__').innerHTML = '<input type="text" id="add_url"><button onclick="_pseudoclick()">Add</button>';
+document.getElementById('__new__').innerHTML += '<div id="__status__"></div>';
+
+xpf.formkey = '{{ formkey }}';
+setInterval( xpf.getformkey, 60*1000 );
+
+
+
+function congrats(enc) {
+    var url = sessionStorage.url;
+    sessionStorage.removeItem("url");
+    msg = '';
+    msg += '<h2>http://去.cc/' + enc.base62  + '</h2>';
+    msg += '<p>redirects to<br>' + url + '</p>';
+    msg += '<h3>Additional Mappings</h3>';
+    msg += '<p>http://去.cc/' + enc.top16 + '<p>';
+    msg += '<p>http://去.cc/' + enc.CJK + '<p>';
+    msg += '<p>http://去.cc/' + enc.hangul + '<p>';
+    msg += '<p>http://去.cc/' + enc.greek + '<p>';
+    msg += '<p>http://去.cc/' + enc.anglosaxon + '<p>';
+    msg += '<p>http://去.cc/' + enc.braile + '<p>';
+    msg += '<p>http://去.cc/' + enc.alchemical + '<p>';
+    msg += '<p>http://去.cc/' + enc.yijing + '<p>';
+    msg += '<br><p> * you can go to <a href="/'+enc.base62+'/info">http://去.cc/'+enc.base62+'/info</a> to see all the mappings';
+    document.getElementById('__new__').innerHTML = msg;
+}
+
+function waiting() {
+    msg = '';
+    msg += '<h2>processing...</h2>';
+    document.getElementById('__new__').innerHTML = msg;
+}
+
+function warn_badrequest(url) {
+    document.getElementById('__status__').innerHTML = 'invalid URL, please enter a valid URL';
+}
+
+function _pseudoclick() {
+    var url = document.getElementById('add_url').value;
+    xpf.POST('/__new__/', {"formkey":xpf.formkey,"url":url},
+    function(err, data) {
+      if (err !== null || !('handshake' in data) ) {
+        warn_badrequest(url);
+      } else {
+        sessionStorage.url = url;
+        sessionStorage.handshake = data['handshake'];
+        window.location = "/__new__/";
+      }
+    });
+}
+
+
+//RETURN HANDSHAKE
+if (typeof sessionStorage.handshake !== 'undefined') {
+  waiting();
+  // sleep 1
+  xpf.sleep(1000).then(() => {
+    var rhs = sessionStorage.handshake.split('').reverse().join("");
+    xpf.PUT('/__new__/', {"return_handshake":rhs},
+    function(err, data) {
+      sessionStorage.removeItem("handshake");
+      if (err !== null || !('encodings' in data)) {
+        warn_badrequest(url);
+        console.log('Failed handshake: ' + err);
+      } else {
+        congrats(data.encodings);
+      }
+    });
+  }); // end sleep
+}
 
 </script>
 

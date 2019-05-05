@@ -5,7 +5,7 @@ if sys.executable != INTERP:
     os.execl(INTERP, INTERP, *sys.argv)
 sys.path.append(os.getcwd())
 
-from flask import Flask, jsonify, redirect, render_template
+from flask import Flask, jsonify, redirect, request, render_template
 application = Flask(__name__)
 
 from urllib import unquote
@@ -31,7 +31,7 @@ def _utf8(s):
 def index():
     try:
         title = u'去.cc'
-        data = {'username':x404.NovelNum.anglosaxon}
+        data = {'anglos':u'ᚢᚱᛚᛋᚻᚩᚱᛏᛖᚾᛖᚱ'}
         return render_template('index.html', title=title, data=data)
     except Exception as e:
         if DEBUG:
@@ -41,7 +41,7 @@ def index():
 
 
 # x404 get info on key
-@application.route('/<path:key>/info')
+@application.route('/<string:key>/info')
 def getURLinfo(key):
     try:
         key = _utf8(key)
@@ -62,17 +62,36 @@ def getURLinfo(key):
         return redirect(u"https://去.cc", code=302)
 
 
-# x404 get psuedoform html|json object
-@application.route('/new.url', methods=['GET', 'POST', 'PUT'])
-def getPseudoForm():
+# x404 get formkey json
+@application.route('/__formkey__/')
+def getFormKey():
     try:
         formkey = _PF.getFormKey()
+        return jsonify({'formkey':formkey})
+    except Exception as e:
+        if DEBUG:
+            return '<pre>' + traceback.format_exc() + '</pre>'
+        return u'{}'
+
+
+# x404 get psuedoform html|json object
+@application.route('/__new__/', methods=['GET', 'POST', 'PUT'])
+def handlePseudoForm():
+    try:
         if request.method == 'POST':
-            hs = _PF.addRequest(request.remote_addr, request.form.get('url'), formkey)
-            return jsonify({'handshake':hs})
+            data = request.get_json()
+            hs = _PF.addRequest(request.remote_addr, data.get('url'), data.get('formkey'))
+            res = jsonify({'handshake':hs})
+            if hs is None:
+                res.status_code = 400
+            return res
         elif request.method == 'PUT':
-            rowid = _PF.commitRequest(request.remote_addr, request.form.get('return_handshake')
-            return jsonify({'id':rowid})
+            data = request.get_json()
+            encodings = _PF.commitRequest(request.remote_addr, data.get('return_handshake'), 1)
+            if encodings is None:
+                res.status_code = 412
+            return jsonify({'encodings':encodings})
+        formkey = _PF.getFormKey()
         return render_template('new.html', formkey=formkey)
     except Exception as e:
         if DEBUG:
@@ -82,7 +101,7 @@ def getPseudoForm():
 
 # x404 redirector
 # TODO template? or redirect somewhere else?
-@application.route('/<path:key>')
+@application.route('/<key>')
 def URLredirector(key):
     try:
         key = _utf8(key)
