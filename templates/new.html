@@ -31,10 +31,10 @@ function congrats(enc) {
     var url = sessionStorage.url;
     sessionStorage.removeItem("url");
     msg = '';
-    msg += '<h2>http://去.cc/' + enc.base62  + '</h2>';
-    msg += '<p>will redirect to<br>' + url + '</p>';
-    msg += '<h3>Additional Mappings</h3>';
-    msg += '<p>http://去.cc/' + enc.top16 + '<p>';
+    msg += '<h2>http://avant.net/' + enc.base62  + '</h2>';
+    msg += '<h2>http://avant.net/' + enc.top16  + '</h2>';
+    msg += '<p>These will redirect to ...<br>' + url + '</p>';
+    msg += '<h3>You can also use these Novelty Mappings</h3>';
     msg += '<p>http://去.cc/' + enc.CJK + '<p>';
     msg += '<p>http://去.cc/' + enc.hangul + '<p>';
     msg += '<p>http://去.cc/' + enc.greek + '<p>';
