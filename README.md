@@ -1,18 +1,18 @@
 # x404-Novelty-URL-Shortener
 Working example on https://去.cc
 
-## What?
+## What
 This project is a proof-of-concept to make a better and more interesting URL shortening service. It leverages the entire Unicode character set to offer unique characters (in Chinese, Korean, anglosaxon runes, braile, and even emojis).
 
 Most URL shortening services use a base-62 alphanumeric key to map to a long-url. Typically, the base-62 characters include 26-uppercase letters (ABCD...), 26 lowercase letters (abcd...), and 10 digits (0123...), for a total of 62 characters. Occasionally they will include an underscore or dash, bringing you to base-64.
 
 This is all well and fine, and perfectly reasonable in an ASCII character set where you're trying to avoid non-printable characters. However, nowadays with modern browsers supporting UTF-8, and offering at least one font capable of rendering most of the popular Unicode character sets (中文, 한글, etc), then why limit ourselves to ASCII? We have the entire global set of symbols at our disposal!
 
-## Why?
+## Why
 Why not! There are numerous problems with URL shortening services, from scammers to all kinds of ugliness, but most people use a URL shortening service as a kind of novelty. For me, this is a personal project and I don't expect to offer it in any serious production capacity, other than for my own amusement, and as a proof-of-concept of what a URL Shortening Service **could** do.
 
-## How?
-In short, Punycode and Unicode bases.
+## How
+In short, Punycode with Unicode numeric bases.
 
 ### Punycode
 Punycode is a transcoding of ASCII-safe characters to represent Unicode characters. Punycode is used for internationalized domain names. For examples the domain **去.cc** in punycode is **xn--1nr.cc**. All punycode domain names begin with the prefix "xn--". Older browsers that don't support internationalized domain names, will simply gracefully degrade to the punycode representation. Modern browsers will display the internationalized domain names perfectly fine.
@@ -68,7 +68,7 @@ Unicode is full of fun and interesting character sets, here are some examples th
     greek:      οΒΦδ
     yijing:     ䷫䷔䷫䷃
     
-* **top16**: The top-16 most common letters in English (where f is maps to 0). This is a subset of base62, and I find it often produces sequences that are easier to remember, albeit longer than base-62.
+* **top16**: The top-16 most common letters in English (where f maps to 0). This is a subset of base62, and I find it often produces sequences that are easier to remember, albeit longer than base-62.
 * **CJK**: The base-20970 Chinese characters. This potentially can grow to over 80,000 -- depending on future browser support of the CJK block extensions. Also, these are really beautiful.
 * **hangul**: The base-11171 Hangul syllables. Note: Hangul is a phonetic alphabet with only 28 characters, however, for readability, Unicode includes 11,171 combinations of those 28 Hangul characters. This makes it useful an extremely large numeric base.
 * **dingbats**: Precursor to emojis, dingbats provide a base-192.
