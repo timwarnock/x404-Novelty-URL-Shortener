@@ -31,7 +31,7 @@ def _utf8(s):
 def index():
     try:
         title = u'去.cc'
-        data = {'anglos':u'ᚢᚱᛚᛋᚻᚩᚱᛏᛖᚾᛖᚱ'}
+        data = {'anglos':u'ᚢᚱᛚ ᛋᚻᚩᚱᛏᛖᚾᛖᚱ', 'CJK':u'網址縮短'}
         return render_template('index.html', title=title, data=data)
     except Exception as e:
         if DEBUG:

@@ -7,7 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <h1 id="__title__">Enter a URL</h1>
+        <h1 id="__title__">Enter a URL to Shorten</h1>
         <div id="__new__">
         <form name="honey" method="POST">
         <input type="text" name="url">
@@ -42,7 +42,7 @@ function congrats(enc) {
     msg += '<p>http://去.cc/' + enc.braile + '<p>';
     msg += '<p>http://去.cc/' + enc.alchemical + '<p>';
     msg += '<p>http://去.cc/' + enc.yijing + '<p>';
-    msg += '<br><p> * you can go to <a href="/'+enc.base62+'/info">http://去.cc/'+enc.base62+'/info</a> to see all the mappings';
+    msg += '<br><p> * you can go to <a href="/'+enc.base62+'/info">http://去.cc/'+enc.base62+'/info</a> to see all the mappings for your URL';
     document.getElementById('__new__').innerHTML = msg;
     document.getElementById('__title__').innerHTML = 'Here are some Short URLs';
 }
