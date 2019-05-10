@@ -100,32 +100,6 @@ this.getformkey = function() {
     });
 }
 
-// public (open single exhibit in modal browser)
-//   + exid is the div#id to write the browser
-//   + exname is the name of the exhibit to open
-this.exhibit = function(exid,exname) {
-  var artw = this.getArtwork();
-  if (exname in artw) {
-    this.openModalBrowser(exname);
-  } else {
-    console.log('Fetching json');
-    var self = this;
-    getJSON('https://avant.net/artwork/json',
-    function(err, data) {
-      if (err !== null) {
-        console.log('Something went wrong: ' + err);
-      } else {
-        self.setArtwork.apply(self, [data]);
-        var msg = '';
-        msg += '<div id="xg_browser" class="modal"><div id="xg_browserContent_wrap"></div></div>';
-        msg += '<div id="xg_image" class="modal2"><div id="xg_imageContent"></div></div>';
-        document.getElementById(exid).innerHTML = msg;
-        self.openModalBrowser.apply(self, [exname]);
-      }
-    });
-  }
-};
-
 
 }; //end xpf
 

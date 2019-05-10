@@ -3,11 +3,14 @@
     <head>
         <meta charset="utf-8">
         <title>去 new</title>
-        <script src="/js/PseudoForm.js"></script>
+        <script src="/PseudoForm.js"></script>
+        <link href="/style.css" rel="stylesheet" type="text/css" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
-    <body>
-        <h1 id="__title__">Enter a URL to Shorten</h1>
+<body>
+    <div id="main">
+        <h1 id="anglos_title" class="gray">{{ data.anglos }}</h1>
+        <p id="x404_title" class="">x404 Novelty URL Shortener</p>
         <div id="__new__">
         <form name="honey" method="POST">
         <input type="text" name="url">
@@ -19,22 +22,23 @@
 <script>
 
 
-document.getElementById('__new__').innerHTML = '<input type="text" id="add_url"><button onclick="_pseudoclick()">Add</button>';
+document.getElementById('__new__').innerHTML = '<input type="text" id="add_url" placeholder="Enter long URL...">';
+document.getElementById('__new__').innerHTML += '<button onclick="_pseudoclick()">+</button>';
 document.getElementById('__new__').innerHTML += '<div id="__status__"></div>';
 
 xpf.formkey = '{{ formkey }}';
 setInterval( xpf.getformkey, 60*1000 );
 
 
-
 function congrats(enc) {
     var url = sessionStorage.url;
     sessionStorage.removeItem("url");
     msg = '';
-    msg += '<h2>http://avant.net/' + enc.base62  + '</h2>';
-    msg += '<h2>http://avant.net/' + enc.top16  + '</h2>';
-    msg += '<p>These will redirect to ...<br>' + url + '</p>';
-    msg += '<h3>You can also use these Novelty Mappings</h3>';
+    msg += '<p id="featured_short">http://avant.net/' + enc.base62  + '</p>';
+    msg += '<p>will redirect to:</p>';
+    msg += '<p id="longurl">' + url + '</p>';
+    msg += '<h3 id="mappings_title">x404 Novelty Mappings:</h3>';
+    msg += '<p>http://avant.net/' + enc.top16  + '</p>';
     msg += '<p>http://去.cc/' + enc.CJK + '<p>';
     msg += '<p>http://去.cc/' + enc.hangul + '<p>';
     msg += '<p>http://去.cc/' + enc.greek + '<p>';
@@ -42,9 +46,10 @@ function congrats(enc) {
     msg += '<p>http://去.cc/' + enc.braile + '<p>';
     msg += '<p>http://去.cc/' + enc.alchemical + '<p>';
     msg += '<p>http://去.cc/' + enc.yijing + '<p>';
-    msg += '<br><p> * you can go to <a href="/'+enc.base62+'/info">http://去.cc/'+enc.base62+'/info</a> to see all the mappings for your URL';
+    //msg += '<p id="infoline"> * go to <a href="/'+enc.base62
+    //  msg += '/info">http://去.cc/'+enc.base62+'/info</a> to see all the mappings for your URL';
     document.getElementById('__new__').innerHTML = msg;
-    document.getElementById('__title__').innerHTML = 'Here are some Short URLs';
+    document.getElementById('x404_title').innerHTML = '<span id="success">Success!</span>';
 }
 
 function waiting() {
@@ -91,7 +96,19 @@ if (typeof sessionStorage.handshake !== 'undefined') {
   }); // end sleep
 }
 
-</script>
 
-    </body>
+
+// set "Enter" event listener
+const node = document.getElementById('add_url');
+node.addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+        _pseudoclick();
+    }
+});
+
+
+
+</script>
+</div> <!-- /main -->
+</body>
 </html>

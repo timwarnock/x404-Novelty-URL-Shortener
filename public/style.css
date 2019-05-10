@@ -1,0 +1,106 @@
+body { 
+    font-family: sans-serif; 
+} 
+.gray, .grey { color: gray; }
+.lightgray, .lightgrey { color: #ddd; }
+.bold { font-weight: bold; }
+
+.CJK {
+    font-family: "UKai", "STKaiTi", "KaiTi";
+    font-weight: normal;
+}
+
+#CJK_title {
+    font-size: 450%;
+    margin: 20px 0 10px 0;
+}
+#anglos_title {
+    font-size: 225%;
+}
+#x404_title {
+    color: #333;
+    font-size: 125%;
+}
+#main {
+    max-width: 600px;
+    margin: 100px auto 0 auto;
+    text-align: center;
+}
+#about a {
+    text-decoration: none;
+    color: gray;
+}
+#about a:hover {
+    color: #44e;
+}
+
+#try_it a {
+    /* min-width: 200px;
+       */
+    background-color: #44e;
+    color: white;
+    border-radius: 8px;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 20px;
+    margin: 0px 0px;
+    transition: all 0.3s ease-in 0s;
+}
+#try_it a:hover {
+    background-color: #66f;
+}
+
+#success {
+    color: #4b4;
+}
+
+#longurl {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: gray;
+}
+
+#featured_short {
+    font-size: 150%;
+}
+
+#mappings_title {
+    margin-top: 50px;
+}
+
+#infoline {
+    color: gray;
+    font-size: 90%;
+}
+
+#__new__ {
+    transition: all 0.4s ease-in 0s;
+}
+
+#__new__ input[type=text] {
+    border: 1px solid gray;
+    font-size: 110%;
+    padding: 10px;
+}
+#__new__ input[type=text]:focus {
+    border: 1px solid #44e;
+}
+
+#__new__ button {
+    cursor: pointer;
+    background-color: #44e;
+    border: 1px solid #44e;
+    color: white;
+    font-size: 110%;
+    font-weight: bold;
+    padding: 10px;
+}
+
+#__status__ {
+    color: gray;
+    padding: 5px;
+    font-size: 90%;
+}

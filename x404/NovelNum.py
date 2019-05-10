@@ -57,7 +57,7 @@ U_SETS = {
     "CJK"       : (int('4e00',16),int('9fea',16)),
     "hangul"    : (int('ac00',16),int('d7a3',16)),
     "yijing"    : (int('4dc0',16),int('4dff',16)),
-    "runic"     : (int('16a0',16),int('16ea',16)),
+    #"runic"     : (int('16a0',16),int('16ea',16)),
     "dingbats"  : (int('2700',16),int('27bf',16)),
     "braile"    : (int('2840',16),int('28ff',16)),
     "alchemical": (int('1f700',16),int('1f773',16)),
