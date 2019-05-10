@@ -2,7 +2,7 @@
 Working example on https://去.cc
 
 ## What
-This project is a proof-of-concept to make a better and more interesting URL shortening service. It leverages the Unicode character set to offer unique characters (in Chinese, Korean, anglosaxon runes, braille, and even emojis).
+This project is a proof-of-concept to make a better and more interesting URL shortening service. It leverages Unicode character blocks to offer novel numeric characters (in Chinese, Korean, anglosaxon runes, braille, and even emojis).
 
 Most URL shortening services use only a base-62 alphanumeric key to map to a long-url. Typically, the base-62 characters include 26-uppercase letters (ABCD...), 26 lowercase letters (abcd...), and 10 digits (0123...), for a total of 62 characters. Occasionally they will include an underscore or dash, bringing you to base-64. This is all perfectly reasonable when using ASCII and trying to avoid non-printable characters. However, nowadays with modern browsers supporting UTF-8, and offering basic rendering of popular Unicode character sets (中文, 한글, etc), we can leverage a global set of symbols!
 
@@ -43,7 +43,7 @@ However, the x404 Novelty URL Shortener would look something like:
     http://去.cc/齁
     http://去.cc/톞각
    
-Taken to extremes, what if we're building a database of many many URLs, let's say 9,223,372,036,854,775,807 (nine quintillion two hundred twenty-three quadrillion three hundred seventy-two trillion thirty-six billion eight hundred fifty-four million seven hundred seventy-five thousand eight hundred seven). This is the largest signed-64-bit integer on most systems. We'd end up with short URLs that look something like this:
+Taken to extremes, what if we're building a database of lots and lots URLs, let's say 9,223,372,036,854,775,807 (nine quintillion two hundred twenty-three quadrillion three hundred seventy-two trillion thirty-six billion eight hundred fifty-four million seven hundred seventy-five thousand eight hundred seven). This is the largest signed-64-bit integer on most systems. Even with that many URLs, we'd end up with short URLs that look something like this:
 
     http://shorturl/7M85y0N8lZa
     http://去.cc/瑙稃瑰蜣丯
