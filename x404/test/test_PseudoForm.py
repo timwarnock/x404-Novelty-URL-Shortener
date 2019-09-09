@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# vim: set tabstop=4 shiftwidth=4 autoindent smartindent:
+# vim: set fileencoding=utf-8 tabstop=4 shiftwidth=4 autoindent smartindent:
 import logging, os, sys, unittest
 import time
 
@@ -16,6 +16,18 @@ class test_PseudoForm(unittest.TestCase):
 
     def tearDown(self):
         pass
+
+    def test_secret(self):
+        self.assertEqual( len(self.pf.secret), 36 )
+
+    def test_secretfile(self):
+        pf = PseudoForm.PseudoForm(ShortURLDB.ShortURLDB(), "test.config")
+        self.assertEqual( pf.secret, 'secret秘密龍key')
+
+    def test_secretnofile(self):
+        pf = PseudoForm.PseudoForm(ShortURLDB.ShortURLDB(), "nosuch.config")
+        self.assertNotEqual( pf.secret, 'secret秘密龍key')
+        self.assertEqual( len(self.pf.secret), 36 )
     
     def test_getFormKey(self):
         self.assertEqual( len(self.pf.getFormKey()), 38 )

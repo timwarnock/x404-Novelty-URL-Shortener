@@ -15,7 +15,7 @@
     >>> len(handshake)
     64
 
-    The client must compute the "return_handshake" via sha256(ip+handshake)
+    The client must compute the "return_handshake"
 
     >>> pf.commitRequest('192.168.1.1', return_handshake)
     123
@@ -25,8 +25,8 @@
 '''
 import time
 import hashlib
-#TODO ConfigParser (for secretkey)
-SECRET = u'secret龍key'
+import uuid
+import ConfigParser
 
 
 class PseudoForm:
@@ -34,9 +34,15 @@ class PseudoForm:
 
     '''
 
-    def __init__(self, surl):
+    def __init__(self, surl, config_file = "PseudoForm.config"):
         self.surl = surl
         self._initdb()
+        try:
+            self.config = ConfigParser.ConfigParser()
+            self.config.read(config_file)
+            self.secret = self.config.get('PseudoForm', 'secret')
+        except:
+            self.secret = str(uuid.uuid4())
 
     def _initdb(self):
         curs = self.surl.db.cursor()
@@ -55,7 +61,7 @@ class PseudoForm:
         '''
         if ts is None:
             ts = int(time.time())
-        return hashlib.sha1((self._unicode(ts/divsec)+SECRET).encode('utf-8')).hexdigest()[2:]
+        return hashlib.sha1((self._unicode(ts/divsec)+self.secret).encode('utf-8')).hexdigest()[2:]
 
     def isValidFormKey(self, testkey, lookback=2, divsec=300):
         ''' return True IFF
