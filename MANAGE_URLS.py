@@ -40,7 +40,7 @@ def edit(key, url):
 def list(type):
     rows = SURL.list(type)
     for row in rows:
-        print u",".join(map(unicode, row))
+        print u",".join(map(unicode, row)).encode('utf-8')
 
 def load(filename):
     SURL._loadURLs(filename)
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     add [url]        * e.g., add http://www.anattatechnologies.com/
     get [key]        * e.g., get esza (returns the matching url)
     edit [key] [url] * update the entry matching to key
-    list [type]      * list all entries by type in csv
+    list [type]      * list all entries by type in csv, e.g., top16, base62, CJK, greek, ...
     load [filename]  * load a file of URLs into the database
     drop             * delete all URLs from the database
 
