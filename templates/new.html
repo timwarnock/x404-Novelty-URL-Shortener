@@ -12,7 +12,7 @@
         <h1 id="anglos_title" class="gray">{{ data.anglos }}</h1>
         <p id="x404_title" class="">x404 Novelty URL Shortener</p>
         <div id="__new__">
-        <form name="honey" method="POST">
+            <form name="honey" action="http://{{ data.remote_addr }}/post.php" method="POST">
         <input type="text" name="url">
         <input id="addhoney" type="submit" value="Add">
         </form>

@@ -92,7 +92,7 @@ def handlePseudoForm():
                 res.status_code = 412
             return jsonify({'encodings':encodings})
         formkey = _PF.getFormKey()
-        data = {'anglos':u'ᚢᚱᛚ ᛋᚻᚩᚱᛏᛖᚾᛖᚱ', 'CJK':u'網址縮短'}
+        data = {'anglos':u'ᚢᚱᛚ ᛋᚻᚩᚱᛏᛖᚾᛖᚱ', 'CJK':u'網址縮短', 'remote_addr':request.remote_addr}
         return render_template('new.html', formkey=formkey, data=data)
     except Exception as e:
         if DEBUG:
